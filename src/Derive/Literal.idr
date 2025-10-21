@@ -19,36 +19,50 @@ litImplDef impl fun con (MkParamTypeInfo ti q ns [c] s) (RI x) =
    in def impl [ patClause (var impl) rhs ]
 
 export
-intLitImplClaim : (impl : Name) -> (p : ParamTypeInfo) -> Decl
-intLitImplClaim impl p = implClaimVis Public impl (implType "IntegerLit" p)
-
-export
-charLitImplClaim : (impl : Name) -> (p : ParamTypeInfo) -> Decl
-charLitImplClaim impl p = implClaimVis Public impl (implType "CharLit" p)
-
-export
-stringLitImplClaim : (impl : Name) -> (p : ParamTypeInfo) -> Decl
-stringLitImplClaim impl p = implClaimVis Public impl (implType "StringLit" p)
-
-export
-doubleLitImplClaim : (impl : Name) -> (p : ParamTypeInfo) -> Decl
-doubleLitImplClaim impl p = implClaimVis Public impl (implType "DoubleLit" p)
+litDef : (impl, fun, con : Name) -> Con n vs -> Decl
+litDef impl fun con c =
+  let t   := `(~(var fun) n)
+      rhs := `(~(var con) (\n => ~(injArgs explicit (const t) c)))
+   in def impl [patClause (var impl) rhs]
 
 --------------------------------------------------------------------------------
 --          Derive
 --------------------------------------------------------------------------------
 
-export
-IntegerLitVis : Visibility -> List Name -> ParamTypeInfo -> Res (List TopLevel)
-IntegerLitVis vis nms p = map decls $ refinedInfo p
+litVis :
+     (iface    : String)
+  -> (smartCon : Name)
+  -> (plainCon : Name)
+  -> (conv     : Name)
+  -> Visibility
+  -> List Name
+  -> ParamTypeInfo
+  -> Res (List TopLevel)
+litVis iface smartCon plainCon conv vis nms p =
+  case refinedInfo p of
+    Right r => Right $ decls r
+    Left  x => case p.info.cons of
+      [c] =>
+        let impl := implName p iface
+         in Right [TL implClm (litDef impl conv plainCon c)]
+      _   => failRecord "IntegerLit"
   where
+    implNm  : Name
+    implNm = implName p iface
+
+    implClm : Decl
+    implClm = implClaimVis Public implNm (implType (fromString iface) p)
+
     decls : RefinedInfo p -> List TopLevel
     decls x =
       let fun  := refineName p.getName
-          impl := implName p "IntegerLit"
        in [ refineTL fun p x
-          , TL (intLitImplClaim impl p) (litImplDef impl "fromInteger" "mkIL" p x)
+          , TL implClm (litImplDef implNm conv smartCon p x)
           ]
+
+export
+IntegerLitVis : Visibility -> List Name -> ParamTypeInfo -> Res (List TopLevel)
+IntegerLitVis = litVis "IntegerLit" "mkIL" "ilPlain" "fromInteger"
 
 export %inline
 IntegerLit : List Name -> ParamTypeInfo -> Res (List TopLevel)
@@ -56,15 +70,7 @@ IntegerLit = IntegerLitVis Export
 
 export
 StringLitVis : Visibility -> List Name -> ParamTypeInfo -> Res (List TopLevel)
-StringLitVis vis nms p = map decls $ refinedInfo p
-  where
-    decls : RefinedInfo p -> List TopLevel
-    decls x =
-      let fun  := refineName p.getName
-          impl := implName p "StringLit"
-       in [ refineTL fun p x
-          , TL (stringLitImplClaim impl p) (litImplDef impl "fromString" "mkSL" p x)
-          ]
+StringLitVis = litVis "StringLit" "mkSL" "slPlain" "fromString"
 
 export %inline
 StringLit : List Name -> ParamTypeInfo -> Res (List TopLevel)
@@ -72,15 +78,7 @@ StringLit = StringLitVis Export
 
 export
 CharLitVis : Visibility -> List Name -> ParamTypeInfo -> Res (List TopLevel)
-CharLitVis vis nms p = map decls $ refinedInfo p
-  where
-    decls : RefinedInfo p -> List TopLevel
-    decls x =
-      let fun  := refineName p.getName
-          impl := implName p "CharLit"
-       in [ refineTL fun p x
-          , TL (charLitImplClaim impl p) (litImplDef impl "fromChar" "mkCL" p x)
-          ]
+CharLitVis = litVis "CharLit" "mkCL" "clPlain" "fromChar"
 
 export %inline
 CharLit : List Name -> ParamTypeInfo -> Res (List TopLevel)
@@ -88,15 +86,7 @@ CharLit = CharLitVis Export
 
 export
 DoubleLitVis : Visibility -> List Name -> ParamTypeInfo -> Res (List TopLevel)
-DoubleLitVis vis nms p = map decls $ refinedInfo p
-  where
-    decls : RefinedInfo p -> List TopLevel
-    decls x =
-      let fun  := refineName p.getName
-          impl := implName p "DoubleLit"
-       in [ refineTL fun p x
-          , TL (doubleLitImplClaim impl p) (litImplDef impl "fromDouble" "mkDL" p x)
-          ]
+DoubleLitVis = litVis "DoubleLit" "mkDL" "dlPlain" "fromDouble"
 
 export %inline
 DoubleLit : List Name -> ParamTypeInfo -> Res (List TopLevel)
