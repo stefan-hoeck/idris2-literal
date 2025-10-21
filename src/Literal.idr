@@ -47,3 +47,14 @@ public export %inline
 Cast String a => StringLit (Subset a p) where
   StringPred = p . cast
   fromString s = Element (cast s) %search
+
+--------------------------------------------------------------------------------
+-- Utility constructors for elab deriving
+--------------------------------------------------------------------------------
+
+public export %inline
+mkIL :
+     (p : Integer -> Type)
+  -> ((i : Integer) -> (0 prf : p i) -> a)
+  -> IntegerLit a
+mkIL p f = IL p (\v => f v %search)

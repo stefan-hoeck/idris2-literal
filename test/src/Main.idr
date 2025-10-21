@@ -1,11 +1,17 @@
 module Main
 
+import Data.Maybe0
+import Data.Refined.Bits32
 import Data.DPair
 import Data.So
 import Data.Nat
 import Literal
 
+import Derive.Prelude
+import Derive.Literal
+
 %default total
+%language ElabReflection
 
 --------------------------------------------------------------------------------
 -- Subset Literals
@@ -46,6 +52,23 @@ Percentage = Subset Double IsPercentage
 
 percentage : Percentage
 percentage = 12.1173
+
+--------------------------------------------------------------------------------
+-- 
+--------------------------------------------------------------------------------
+
+0 IsPerc : Bits32 -> Type
+IsPerc v = v <= 100
+
+record Perc where
+  constructor P
+  value : Bits32
+  {auto 0 prf : IsPerc value}
+
+%runElab derive "Perc" [Show,Eq,IntegerLit]
+
+perc : Perc
+perc = 33
 
 --------------------------------------------------------------------------------
 -- main
