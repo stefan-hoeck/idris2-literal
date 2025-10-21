@@ -55,7 +55,7 @@ percentage : Percentage
 percentage = 12.1173
 
 --------------------------------------------------------------------------------
--- 
+-- IntegerLit deriving 
 --------------------------------------------------------------------------------
 
 0 IsPerc : Bits32 -> Type
@@ -71,6 +71,19 @@ record Perc where
 perc : Perc
 perc = 33
 
+record WrappedInt where
+  constructor WI
+  value : Nat
+
+%runElab derive "WrappedInt" [Show,Eq,IntegerLit]
+
+wrappedInt : WrappedInt
+wrappedInt = 1_000_000
+
+--------------------------------------------------------------------------------
+-- StringLit deriving 
+--------------------------------------------------------------------------------
+
 0 IsPlain : String -> Type
 IsPlain = Str (All PrintableAscii)
 
@@ -82,7 +95,65 @@ record Plain where
 %runElab derive "Plain" [Show,Eq,StringLit]
 
 plain : Plain
-plain = "The quick brown fox jumped over the lazy dog."
+plain = "The quick brown fox..."
+
+record WrappedString where
+  constructor WS
+  value : String
+
+%runElab derive "WrappedString" [Show,Eq,StringLit]
+
+wrappedString : WrappedString
+wrappedString = "The quick brown fox..."
+
+--------------------------------------------------------------------------------
+-- DoubleLit deriving 
+--------------------------------------------------------------------------------
+
+Is01 : Double -> Bool
+Is01 v = 0.0 <= v && v <= 1.0
+
+record D01 where
+  constructor D0
+  value : Double
+  {auto 0 prf : Holds Is01 value}
+
+%runElab derive "D01" [Show,Eq,DoubleLit]
+
+d01 : D01
+d01 = 0.7765
+
+record WrappedDouble where
+  constructor WD
+  value : Double
+
+%runElab derive "WrappedDouble" [Show,Eq,DoubleLit]
+
+wrappedDouble : WrappedDouble
+wrappedDouble = 12.0e-1
+
+--------------------------------------------------------------------------------
+-- CharLit deriving 
+--------------------------------------------------------------------------------
+
+record AChar where
+  constructor AC
+  value : Char
+  {auto 0 prf : Ascii value}
+
+%runElab derive "AChar" [Show,Eq,CharLit]
+
+achar : AChar
+achar = '!'
+
+record WrappedChar where
+  constructor WC
+  value : Char
+
+%runElab derive "WrappedChar" [Show,Eq,CharLit]
+
+wrappedChar : WrappedChar
+wrappedChar = 'o'
 
 --------------------------------------------------------------------------------
 -- main

@@ -79,3 +79,19 @@ mkDL :
   -> ((i : Double) -> (0 prf : p i) -> a)
   -> DoubleLit a
 mkDL p f = DL p (\v => f v %search)
+
+public export %inline
+ilPlain : (Integer -> a) -> IntegerLit a
+ilPlain f = IL (const ()) (\v => f v)
+
+public export %inline
+clPlain : (Char -> a) -> CharLit a
+clPlain f = CL (const ()) (\v => f v)
+
+public export %inline
+slPlain : (String -> a) -> StringLit a
+slPlain f = SL (const ()) (\v => f v)
+
+public export %inline
+dlPlain : (Double -> a) -> DoubleLit a
+dlPlain f = DL (const ()) (\v => f v)
