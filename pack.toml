@@ -1,0 +1,5 @@
+[custom.all.literal]
+type = "local"
+path = "."
+ipkg = "literal.ipkg"
+test = "test/test.ipkg"

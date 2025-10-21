@@ -1,0 +1,12 @@
+package literal
+version = 0.1.0
+authors = "stefan-hoeck"
+license = "BSD-3"
+brief   = "Derivable interfaces for refined literals"
+
+depends = elab-util
+        , refined
+
+sourcedir = "src"
+modules = Literal
+        , Derive.Literal
