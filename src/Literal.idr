@@ -28,22 +28,22 @@ interface StringLit (0 a : Type) where
   0 StringPred : String -> Type
   fromString : (s : String) -> (0 p : StringPred s) => a
 
-public export
-CharLit (Subset Char p) where
-  CharPred = p
-  fromChar c = Element c %search
+public export %inline
+Cast Char a => CharLit (Subset a p) where
+  CharPred = p . cast
+  fromChar c = Element (cast c) %search
 
-public export
-DoubleLit (Subset Double p) where
-  DoublePred = p
-  fromDouble d = Element d %search
+public export %inline
+Cast Double a => DoubleLit (Subset a p) where
+  DoublePred = p . cast
+  fromDouble d = Element (cast d) %search
 
-public export
-IntegerLit (Subset Integer p) where
-  IntegerPred = p
-  fromInteger i = Element i %search
+public export %inline
+Cast Integer a => IntegerLit (Subset a p) where
+  IntegerPred = p . cast
+  fromInteger i = Element (cast i) %search
 
-public export
-StringLit (Subset String p) where
-  StringPred = p
-  fromString s = Element s %search
+public export %inline
+Cast String a => StringLit (Subset a p) where
+  StringPred = p . cast
+  fromString s = Element (cast s) %search

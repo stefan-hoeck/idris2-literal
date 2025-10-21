@@ -1,0 +1,11 @@
+package literal-test
+version = 0.1.0
+authors = "stefan-hoeck"
+license = "BSD-3"
+
+depends = literal
+
+sourcedir = "src"
+
+executable = "literal-test"
+main       = Main
