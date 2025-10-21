@@ -2,6 +2,7 @@ module Main
 
 import Data.Maybe0
 import Data.Refined.Bits32
+import Data.Refined.String
 import Data.DPair
 import Data.So
 import Data.Nat
@@ -69,6 +70,19 @@ record Perc where
 
 perc : Perc
 perc = 33
+
+0 IsPlain : String -> Type
+IsPlain = Str (All PrintableAscii)
+
+record Plain where
+  constructor PL
+  value : String
+  {auto 0 prf : IsPlain value}
+
+%runElab derive "Plain" [Show,Eq,StringLit]
+
+plain : Plain
+plain = "The quick brown fox jumped over the lazy dog."
 
 --------------------------------------------------------------------------------
 -- main

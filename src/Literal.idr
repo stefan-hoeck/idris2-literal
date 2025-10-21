@@ -58,3 +58,24 @@ mkIL :
   -> ((i : Integer) -> (0 prf : p i) -> a)
   -> IntegerLit a
 mkIL p f = IL p (\v => f v %search)
+
+public export %inline
+mkSL :
+     (p : String -> Type)
+  -> ((i : String) -> (0 prf : p i) -> a)
+  -> StringLit a
+mkSL p f = SL p (\v => f v %search)
+
+public export %inline
+mkCL :
+     (p : Char -> Type)
+  -> ((i : Char) -> (0 prf : p i) -> a)
+  -> CharLit a
+mkCL p f = CL p (\v => f v %search)
+
+public export %inline
+mkDL :
+     (p : Double -> Type)
+  -> ((i : Double) -> (0 prf : p i) -> a)
+  -> DoubleLit a
+mkDL p f = DL p (\v => f v %search)
