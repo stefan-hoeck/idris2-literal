@@ -9,4 +9,5 @@ depends = elab-util
 
 sourcedir = "src"
 modules = Literal
+        , Literal.Prelude
         , Derive.Literal
