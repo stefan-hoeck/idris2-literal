@@ -55,7 +55,7 @@ percentage : Percentage
 percentage = 12.1173
 
 --------------------------------------------------------------------------------
--- IntegerLit deriving 
+-- IntegerLit deriving
 --------------------------------------------------------------------------------
 
 0 IsPerc : Bits32 -> Type
@@ -81,7 +81,7 @@ wrappedInt : WrappedInt
 wrappedInt = 1_000_000
 
 --------------------------------------------------------------------------------
--- StringLit deriving 
+-- StringLit deriving
 --------------------------------------------------------------------------------
 
 0 IsPlain : String -> Type
@@ -107,7 +107,7 @@ wrappedString : WrappedString
 wrappedString = "The quick brown fox..."
 
 --------------------------------------------------------------------------------
--- DoubleLit deriving 
+-- DoubleLit deriving
 --------------------------------------------------------------------------------
 
 Is01 : Double -> Bool
@@ -123,6 +123,9 @@ record D01 where
 d01 : D01
 d01 = 0.7765
 
+d01_int : D01
+d01_int = 0
+
 record WrappedDouble where
   constructor WD
   value : Double
@@ -132,8 +135,11 @@ record WrappedDouble where
 wrappedDouble : WrappedDouble
 wrappedDouble = 12.0e-1
 
+wrappedDouble2 : WrappedDouble
+wrappedDouble2 = 3
+
 --------------------------------------------------------------------------------
--- CharLit deriving 
+-- CharLit deriving
 --------------------------------------------------------------------------------
 
 record AChar where

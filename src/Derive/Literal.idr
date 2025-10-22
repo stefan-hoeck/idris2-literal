@@ -15,7 +15,7 @@ litImplDef impl fun con (MkParamTypeInfo ti q ns [c] s) (RI x) =
       prf  := `(fromJust0 (hdec0 {p = ~(proofType ns c.args x)} (~(vfun) n)))
       pred := `(\v => IsJust0 (hdec0 {p = ~(proofType ns c.args x)} (~(vfun) v)))
       rhs  := `(~(var con) (~pred) (\n,_ => let 0 prf := ~(prf) in ~(res)))
-      
+
    in def impl [ patClause (var impl) rhs ]
 
 export
@@ -28,6 +28,35 @@ litDef impl fun con c =
 --------------------------------------------------------------------------------
 --          Derive
 --------------------------------------------------------------------------------
+
+litOnly :
+     (iface    : String)
+  -> (smartCon : Name)
+  -> (plainCon : Name)
+  -> (conv     : Name)
+  -> Visibility
+  -> List Name
+  -> ParamTypeInfo
+  -> Res (List TopLevel)
+litOnly iface smartCon plainCon conv vis nms p =
+  case refinedInfo p of
+    Right r => Right $ decls r
+    Left  x => case p.info.cons of
+      [c] =>
+        let impl := implName p iface
+         in Right [TL implClm (litDef impl conv plainCon c)]
+      _   => failRecord "IntegerLit"
+  where
+    implNm  : Name
+    implNm = implName p iface
+
+    implClm : Decl
+    implClm = implClaimVis Public implNm (implType (fromString iface) p)
+
+    decls : RefinedInfo p -> List TopLevel
+    decls x =
+      let fun  := refineName p.getName
+       in [TL implClm (litImplDef implNm conv smartCon p x)]
 
 litVis :
      (iface    : String)
@@ -86,7 +115,11 @@ CharLit = CharLitVis Export
 
 export
 DoubleLitVis : Visibility -> List Name -> ParamTypeInfo -> Res (List TopLevel)
-DoubleLitVis = litVis "DoubleLit" "mkDL" "dlPlain" "fromDouble"
+DoubleLitVis v ns p =
+  [| List.(++)
+       (litVis "DoubleLit" "mkDL" "dlPlain" "fromDouble" v ns p)
+       (litOnly "IntegerLit" "mkIL" "ilPlain" "fromInteger" v ns p)
+  |]
 
 export %inline
 DoubleLit : List Name -> ParamTypeInfo -> Res (List TopLevel)
